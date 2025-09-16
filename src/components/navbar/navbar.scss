@@ -1,0 +1,48 @@
+.navbar {
+  padding: 12px 24px;
+
+  &-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background-color: #f0f2f5;
+    padding: 8px 16px;
+    border-radius: 9999px;
+
+    input {
+      border: none;
+      outline: none;
+      background-color: transparent;
+    }
+  }
+}
+
+/* 🔽 Мобильная версия */
+
+@media (max-width: 768px) {
+  .navbar {
+    position: fixed !important;
+    bottom: 0;
+    top: auto;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #ddd;
+
+    &-content {
+      justify-content: space-around;
+    }
+
+    .navbar-title,
+    .navbar-search {
+      display: none;
+    }
+  }
+}
