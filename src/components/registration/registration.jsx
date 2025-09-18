@@ -10,7 +10,7 @@ export const Registration = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        'http://192.168.1.2:8080/api/v1/auth/register',
+        'https://b8203d5a8b30.ngrok-free.app/api/v1/auth/register',
         {
           email,
           username,

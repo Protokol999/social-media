@@ -15,7 +15,7 @@ export const Login = () => {
     }
     try {
       const response = await axios.post(
-        'http://192.168.1.2:8080/api/v1/auth/login',
+        'https://b8203d5a8b30.ngrok-free.app/api/v1/auth/login',
         {
           email,
           password
@@ -54,12 +54,9 @@ export const Login = () => {
               onChange={e => setPassword(e.target.value)}
             />
             {error && <div className='login__error'>{error}</div>}
-            <span
-              className='login__forgot-password'
-              onClick={() => console.log('Forgot password clicked')}
-            >
+            <Link className='login__forgot-password' to='/forgot-password'>
               Забыли пароль?
-            </span>
+            </Link>
             <button type='submit'>Войти</button>
             <hr />
             <span className='login__register-prompt'>
