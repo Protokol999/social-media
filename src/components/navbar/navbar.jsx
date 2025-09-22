@@ -45,6 +45,9 @@ export const Navbar = () => {
           <Link to='/login' style={{ color: 'inherit' }}>
             <MdLogin size={30} style={{ cursor: 'pointer' }} />
           </Link>
+          {/* <Link to='/update-user' style={{ color: 'inherit' }}>
+            <MdLogin size={30} style={{ cursor: 'pointer' }} />
+          </Link> */}
         </div>
       </div>
     </AppBar>

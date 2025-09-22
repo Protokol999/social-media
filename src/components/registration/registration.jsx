@@ -1,16 +1,18 @@
 import axios from 'axios';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './registration.scss';
 export const Registration = () => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleRegister = async e => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        'https://b8203d5a8b30.ngrok-free.app/api/v1/auth/register',
+        'https://90fba30a4cff.ngrok-free.app/api/v1/auth/register',
         {
           email,
           username,
@@ -18,12 +20,21 @@ export const Registration = () => {
         }
       );
       console.log('Успех', response.data);
-      localStorage.setItem('token', response.data.token);
-      alert('Вы успешно вошли в систему');
+
+      const accessToken = response.data.accessToken;
+      localStorage.setItem('accessToken', accessToken);
+      const profileResponse = await axios.get(
+        `https://90fba30a4cff.ngrok-free.app/api/v1/auth/me`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        }
+      );
+      localStorage.setItem('userId', profileResponse.data.id);
 
       setEmail('');
       setUsername('');
       setPassword('');
+      navigate('/update-user');
     } catch (error) {
       console.error(
         'Ошибка при регистрации',

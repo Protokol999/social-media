@@ -15,19 +15,33 @@ export const Login = () => {
     }
     try {
       const response = await axios.post(
-        'https://b8203d5a8b30.ngrok-free.app/api/v1/auth/login',
+        'https://cd24861818d7.ngrok-free.app/api/v1/auth/login',
         {
           email,
           password
         }
       );
-      console.log('Успех', response.data);
-      localStorage.setItem('token', response.data.token);
+
+      const accessToken = response.data.accessToken;
+      localStorage.setItem('accessToken', accessToken);
+      const profileResponse = await axios.get(
+        'https://cd24861818d7.ngrok-free.app/api/v1/auth/me',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'ngrok-skip-browser-warning': 'true'
+          }
+        }
+      );
+
+      localStorage.setItem('userId', profileResponse.data.id);
+      console.log(profileResponse.data);
+      console.log(localStorage.getItem('userId'));
 
       setEmail('');
       setPassword('');
       setError('');
-      navigate('/');
+      navigate('/update-user');
     } catch (error) {
       setError(error.response?.data?.message || 'Неверный логин или пароль');
     }
