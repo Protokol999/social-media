@@ -1,0 +1,318 @@
+.profile-container {
+  display: flex;
+  background-color: #f7f9fc;
+  font-family: 'Inter', sans-serif; /* Используем современный шрифт */
+  color: #2d3436;
+  flex-direction: row;
+  min-height: 100vh; /* Гарантируем, что фон занимает всю высоту */
+}
+
+.profile-main-content-wrapper {
+  flex: 9;
+  padding: 20px 40px; /* Увеличил горизонтальный отступ */
+  overflow-y: auto;
+  background-color: #f7f9fc;
+  width: 100%; /* Убедимся, что занимает всю ширину контейнера */
+}
+
+/* ==================================== */
+/* 1. COVER AND HEADER AREA */
+/* ==================================== */
+
+.cover {
+  height: 250px;
+  background-color: #6a89cc; /* Насыщенный, но мягкий синий */
+  border-radius: 12px;
+  margin-bottom: -70px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* Более выразительная тень */
+}
+
+/* 2. ВЕРХНИЙ ГОРИЗОНТАЛЬНЫЙ РЯД (Аватар + Инфо) */
+.profile-top-row {
+  display: flex;
+  gap: 30px;
+  margin-top: -60px;
+  padding: 0 30px;
+  align-items: flex-start;
+}
+
+/* 2A. Блок Хедера (Аватар, Имя, Кнопки) */
+.profile-header {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+  padding-bottom: 20px;
+}
+
+.avatar {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: #dfe6e9;
+  border: 6px solid #fff;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-80px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.avatar:hover {
+  transform: translateY(-82px) scale(1.02);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  font-size: 50px;
+  font-weight: 700;
+  color: #535c68;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -50px;
+}
+
+.header-info h2 {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.header-buttons {
+  margin-top: 15px;
+  display: flex;
+  gap: 12px;
+}
+
+.header-buttons button {
+  background: #0984e3;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 10px rgba(9, 132, 227, 0.4);
+}
+
+.header-buttons button:hover {
+  background: #0069d9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(9, 132, 227, 0.6);
+}
+
+/* 2B. Блок Инфо-карточек - Правая часть top-row */
+.info-cards-wrapper {
+  flex: 9;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding-top: 20px;
+}
+
+.info-cards-wrapper .info-card {
+  flex: 1;
+}
+
+/* ------------------------------------- */
+/* 3. НИЖНИЙ БЛОК: Посты (Full Width) */
+/* ------------------------------------- */
+.posts-section {
+  padding: 0 30px 30px 30px;
+  margin-top: 20px;
+}
+
+/* Общие стили для карточек */
+.info-card,
+.posts-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #e1e7f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.info-card:hover,
+.posts-card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.info-card h3,
+.posts-card h3 {
+  margin-top: 0;
+  border-bottom: 1px solid #e1e7f0;
+  padding-bottom: 12px;
+  font-size: 19px;
+  color: #0984e3;
+  font-weight: 600;
+}
+
+.info-card p {
+  line-height: 1.6;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.info-card b {
+  color: #34495e;
+  font-weight: 600;
+}
+
+/* Улучшение стилей для ссылок в Соцсетях */
+.info-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.info-card ul li {
+  margin-bottom: 8px;
+}
+
+.info-card ul li a {
+  color: #0984e3;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.info-card ul li a:hover {
+  color: #0069d9;
+  text-decoration: underline;
+}
+
+/* ==================================== */
+/* 4. MEDIA QUERIES (АДАПТИВНОСТЬ) */
+/* ==================================== */
+
+/* Для планшетов и экранов до 1024px */
+@media (max-width: 1024px) {
+  .profile-container {
+    flex-direction: column; /* Сайдбар и основной контент идут друг за другом */
+  }
+
+  /* Основной контент теперь занимает всю ширину */
+  .profile-main-content-wrapper {
+    flex: none;
+    padding: 10px 20px;
+  }
+
+  /* Обложка занимает всю ширину */
+  .cover {
+    height: 200px; /* Немного уменьшим высоту обложки */
+  }
+
+  /* Горизонтальный ряд разбивается на колонку */
+  .profile-top-row {
+    flex-direction: column; /* Аватар + Инфо идут друг под другом */
+    gap: 20px;
+    padding: 0 10px;
+    margin-top: -40px; /* Меньше отступ */
+  }
+
+  /* Блок Хедера (Аватар, Имя, Кнопки) */
+  .profile-header {
+    flex: none; /* Убираем фиксированный flex */
+    align-items: center;
+    padding-bottom: 0;
+  }
+
+  .avatar {
+    width: 140px;
+    height: 140px;
+    transform: translateY(-70px); /* Смещение аватара */
+    margin-bottom: -70px; /* Компенсация, чтобы следующий блок поднялся */
+  }
+
+  .header-info {
+    margin-top: 0;
+    padding-top: 10px;
+  }
+
+  /* Инфо-карточки (Правая часть top-row) */
+  .info-cards-wrapper {
+    flex: none;
+    flex-direction: row; /* Пока оставляем горизонтально, но дадим им возможность переноситься */
+    flex-wrap: wrap;
+    padding-top: 0;
+  }
+
+  .info-cards-wrapper .info-card {
+    flex: 1 1 calc(50% - 10px); /* По две карточки в ряд */
+  }
+
+  /* Секция постов */
+  .posts-section {
+    padding: 0 10px 20px 10px;
+  }
+}
+
+/* Для мобильных устройств до 768px */
+@media (max-width: 768px) {
+  .profile-main-content-wrapper {
+    padding: 10px 15px;
+  }
+
+  .cover {
+    height: 150px;
+  }
+
+  .avatar {
+    width: 100px;
+    height: 100px;
+    border-width: 4px;
+    transform: translateY(-50px);
+    margin-bottom: -50px;
+  }
+
+  .avatar-placeholder {
+    font-size: 30px;
+  }
+
+  .header-info h2 {
+    font-size: 28px;
+  }
+
+  .header-buttons {
+    flex-direction: column; /* Кнопки одна под другой */
+    gap: 8px;
+    width: 100%;
+  }
+
+  .header-buttons button {
+    padding: 12px;
+  }
+
+  /* Инфо-карточки - теперь одна под другой */
+  .info-cards-wrapper {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .info-cards-wrapper .info-card {
+    flex: 1 1 100%; /* Каждая карточка занимает всю ширину */
+  }
+
+  /* Убираем лишние отступы, чтобы максимизировать область просмотра */
+  .profile-top-row {
+    padding: 0 5px;
+  }
+
+  .posts-section {
+    padding: 0 5px 15px 5px;
+  }
+}

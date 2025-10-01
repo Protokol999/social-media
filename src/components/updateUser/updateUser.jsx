@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './updateUser.scss';
 
 export const UpdateUser = () => {
@@ -12,6 +13,7 @@ export const UpdateUser = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const userId = localStorage.getItem('userId');
+  const navigate = useNavigate();
 
   // Предварительный просмотр аватара
   // const handleAvatarChange = e => {
@@ -52,7 +54,7 @@ export const UpdateUser = () => {
         // avatar: avatarBase64
       };
       const response = await axios.patch(
-        `https://cd24861818d7.ngrok-free.app/api/v1/users/${userId}`,
+        `https://c8e85948dcc9.ngrok-free.app/api/v1/users/${userId}`,
         userData,
         {
           headers: {
@@ -63,6 +65,7 @@ export const UpdateUser = () => {
         }
       );
 
+      navigate(`/profile/${userId}`);
       console.log('Ответ сервера:', response.data);
 
       setSuccess('Профиль успешно обновлён!');

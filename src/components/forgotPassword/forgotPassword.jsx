@@ -12,13 +12,12 @@ export const ForgotPassword = () => {
     }
     try {
       const response = await axios.post(
-        'https://b8203d5a8b30.ngrok-free.app/api/v1/auth/forgot-password',
+        'https://c8e85948dcc9.ngrok-free.app/api/v1/auth/forgot-password',
         {
           email
         }
       );
       console.log('Успех', response.data);
-      localStorage.setItem('token', response.data.token);
       setEmail('');
       setError('');
     } catch (error) {

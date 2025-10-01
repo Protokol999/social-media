@@ -1,34 +1,43 @@
 import axios from 'axios';
 import { useState } from 'react';
-
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import './resetPassword.scss';
-export const ResetPassword = () => {
+
+export const ResetPassword = ({ setUser }) => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
   const handleUpdate = async e => {
     e.preventDefault();
-    if (!newPassword || !confirmPassword) {
+    if (!newPassword || !confirmPassword || newPassword !== confirmPassword) {
       setError('Пароли не совпадают');
+      return;
     }
+
     try {
-      const response = await axios.post(
-        'https://b8203d5a8b30.ngrok-free.app/api/v1/auth/reset-password',
+      await axios.post(
+        'https://c8e85948dcc9.ngrok-free.app/api/v1/auth/reset-password',
         {
           resetToken: token,
           newPassword,
           confirmPassword
         }
       );
-      localStorage.setItem('token', response.data.token);
+
+      // ⚡ Удаляем старый токен и пользователя
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('isNewUser');
+      setUser(null);
+
       setNewPassword('');
       setConfirmPassword('');
       setError('');
-      navigate('/login');
+      navigate('/login'); // редирект на логин
     } catch (error) {
       setError(error.response?.data?.message || 'Ошибка при отправке запроса');
     }

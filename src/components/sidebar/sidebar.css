@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .sidebar {
   /* flex: 3; - Это должно быть в profile.scss, но на всякий случай */
   height: calc(100vh - 50px);
@@ -11,9 +12,11 @@
 ::-webkit-scrollbar {
   width: 5px;
 }
+
 ::-webkit-scrollbar-track {
   background-color: #f1f1f1;
 }
+
 ::-webkit-scrollbar-thumb {
   background-color: rgb(179, 179, 179);
   border-radius: 10px;
@@ -81,4 +84,4 @@
   padding: 0;
   margin: 0;
   list-style: none;
-}
+}/*# sourceMappingURL=sidebar.css.map */

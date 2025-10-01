@@ -3,10 +3,17 @@ import { BiHome, BiMessageRounded } from 'react-icons/bi';
 import { CgProfile } from 'react-icons/cg';
 import { IoIosNotifications, IoIosSearch } from 'react-icons/io';
 import { MdLogin } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { logo } from '../../assets/index';
 import './navbar.scss';
-export const Navbar = () => {
+export const Navbar = ({ setUser }) => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('userId');
+    setUser(null);
+    navigate('/login');
+  };
   return (
     <AppBar
       position='static'
@@ -48,6 +55,7 @@ export const Navbar = () => {
           {/* <Link to='/update-user' style={{ color: 'inherit' }}>
             <MdLogin size={30} style={{ cursor: 'pointer' }} />
           </Link> */}
+          <button onClick={handleLogout}>Выйти</button>
         </div>
       </div>
     </AppBar>

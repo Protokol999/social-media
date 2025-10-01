@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { logo } from '../../assets';
 import './registration.scss';
-export const Registration = () => {
+
+export const Registration = ({ setUser }) => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -12,29 +14,27 @@ export const Registration = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        'https://90fba30a4cff.ngrok-free.app/api/v1/auth/register',
-        {
-          email,
-          username,
-          password
-        }
+        'https://c8e85948dcc9.ngrok-free.app/api/v1/auth/register',
+        { email, username, password }
       );
-      console.log('Успех', response.data);
 
       const accessToken = response.data.accessToken;
       localStorage.setItem('accessToken', accessToken);
+
       const profileResponse = await axios.get(
-        `https://90fba30a4cff.ngrok-free.app/api/v1/auth/me`,
-        {
-          headers: { Authorization: `Bearer ${accessToken}` }
-        }
+        'https://c8e85948dcc9.ngrok-free.app/api/v1/auth/me',
+        { headers: { Authorization: `Bearer ${accessToken}` } }
       );
+
       localStorage.setItem('userId', profileResponse.data.id);
+      localStorage.setItem('isNewUser', 'true'); // ⚡ пометка нового пользователя
+      setUser(profileResponse.data);
 
       setEmail('');
       setUsername('');
       setPassword('');
-      navigate('/update-user');
+
+      navigate('/update-user'); // редирект на update-user
     } catch (error) {
       console.error(
         'Ошибка при регистрации',
@@ -43,14 +43,16 @@ export const Registration = () => {
       alert(error.response?.data?.message || 'Ошибка при регистрации');
     }
   };
+
   return (
     <section className='registration'>
       <div className='registration-container'>
-        <div className='registration__header'>
-          <h1 className='registration__title'>GS Social</h1>
-          <h2>Пройдите пожалуйста регистрацию</h2>
-        </div>
-        <div className='registration__form-container'>
+        <img className='registration__image' src={logo} alt='logo' />
+        <div className='registration__form'>
+          <div className='registration__header'>
+            <h1 className='registration__title'>GS Social</h1>
+            <h2>Пройдите пожалуйста регистрацию</h2>
+          </div>
           <form className='registration__form' onSubmit={handleRegister}>
             <input
               type='text'
