@@ -1,6 +1,6 @@
-import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import api from '../../api'; // ✅ импортируем api.js
 import './resetPassword.scss';
 
 export const ResetPassword = ({ setUser }) => {
@@ -19,27 +19,24 @@ export const ResetPassword = ({ setUser }) => {
     }
 
     try {
-      await axios.post(
-        'https://c8e85948dcc9.ngrok-free.app/api/v1/auth/reset-password',
-        {
-          resetToken: token,
-          newPassword,
-          confirmPassword
-        }
-      );
+      await api.post('/auth/reset-password', {
+        resetToken: token,
+        newPassword,
+        confirmPassword
+      });
 
       // ⚡ Удаляем старый токен и пользователя
       localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('userId');
-      localStorage.removeItem('isNewUser');
       setUser(null);
 
       setNewPassword('');
       setConfirmPassword('');
       setError('');
       navigate('/login'); // редирект на логин
-    } catch (error) {
-      setError(error.response?.data?.message || 'Ошибка при отправке запроса');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Ошибка при отправке запроса');
     }
   };
 

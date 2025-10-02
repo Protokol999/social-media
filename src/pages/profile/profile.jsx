@@ -1,8 +1,8 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sidebar } from '../../components/sidebar/sidebar'; // ⚡ Исправлен путь к 'sidebar' и 'Sidebar'
-import './profile.scss'; // ⚡ Исправлен путь к './profile.scss'
+import api from '../../api'; // ⚡ используем api.js
+import { Sidebar } from '../../components/sidebar/sidebar';
+import './profile.scss';
 
 export const Profile = () => {
   const navigate = useNavigate();
@@ -12,22 +12,15 @@ export const Profile = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (!currentUserId) {
+        setLoading(false);
+        console.error('ID пользователя не найден.');
+        return;
+      }
+
       try {
-        const accessToken = localStorage.getItem('accessToken');
-        if (!currentUserId) {
-          setLoading(false);
-          console.error('ID пользователя не найден.');
-          return;
-        }
-        const response = await axios.get(
-          `https://c8e85948dcc9.ngrok-free.app/api/v1/users/${currentUserId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'ngrok-skip-browser-warning': 'true'
-            }
-          }
-        );
+        // ✅ Запрос через api.js, токен ставится автоматически
+        const response = await api.get(`/users/${currentUserId}`);
         setUser(response.data);
       } catch (err) {
         console.error('Ошибка загрузки профиля:', err);
@@ -35,6 +28,7 @@ export const Profile = () => {
         setLoading(false);
       }
     };
+
     fetchUser();
   }, [currentUserId]);
 
@@ -44,16 +38,20 @@ export const Profile = () => {
   return (
     <div className='profile-container'>
       <Sidebar />
-      {/* ⚡ ГЛАВНЫЙ КОНТЕЙНЕР СПРАВА: Содержит все блоки профиля */}
       <div className='profile-main-content-wrapper'>
-        {/* ⚡ Блок Обложки (для наложения аватара) */}
         <div className='cover'></div>
 
-        {/* Хедер: Аватар, Имя, Кнопки */}
         <div className='profile-header'>
           <div className='avatar'>
-            {user.avatarUrl ? (
-              <img src={user.avatarUrl} alt='avatar' />
+            {user.avatarUrl || user.avatar || user.base64Avatar ? (
+              <img
+                src={
+                  user.avatarUrl ||
+                  user.avatar ||
+                  `data:image/jpeg;base64,${user.base64Avatar}`
+                }
+                alt='avatar'
+              />
             ) : (
               <div className='avatar-placeholder'>
                 {user.firstName?.[0]}
@@ -66,7 +64,7 @@ export const Profile = () => {
               {user.firstName} {user.lastName}
             </h2>
             <div className='header-buttons'>
-              <button onClick={() => navigate('/updateUser')}>
+              <button onClick={() => navigate('/update-user')}>
                 Редактировать профиль
               </button>
               <button>Добавить в друзья</button>
@@ -75,9 +73,7 @@ export const Profile = () => {
           </div>
         </div>
 
-        {/* Основной контент (Колонки под хедером) */}
         <div className='profile-content'>
-          {/* Левая колонка */}
           <div className='left-column'>
             <div className='info-card'>
               <h3>Информация</h3>
@@ -106,7 +102,6 @@ export const Profile = () => {
             </div>
           </div>
 
-          {/* Правая колонка */}
           <div className='right-column'>
             <div className='posts-card'>
               <h3>Посты</h3>

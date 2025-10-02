@@ -1,53 +1,48 @@
-import axios from 'axios';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import api from '../../api';
 import { logo } from '../../assets';
 import './login.scss';
+
 export const Login = ({ setUser }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
   const handleLogin = async e => {
     e.preventDefault();
+
     if (!email || !password) {
       setError('Пожалуйста, заполните все поля');
       return;
     }
+
     try {
-      const response = await axios.post(
-        'https://c8e85948dcc9.ngrok-free.app/api/v1/auth/login',
-        {
-          email,
-          password
-        }
-      );
+      // 1️⃣ Логин через api.js
+      const response = await api.post('/auth/login', { email, password });
+      const { accessToken, refreshToken } = response.data;
 
-      const accessToken = response.data.accessToken;
+      // 2️⃣ Сохраняем токены
       localStorage.setItem('accessToken', accessToken);
-      const profileResponse = await axios.get(
-        'https://c8e85948dcc9.ngrok-free.app/api/v1/auth/me',
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'ngrok-skip-browser-warning': 'true'
-          }
-        }
-      );
+      localStorage.setItem('refreshToken', refreshToken);
+
+      // 3️⃣ Получаем профиль
+      const profileResponse = await api.get('/auth/me');
       setUser(profileResponse.data);
-
       localStorage.setItem('userId', profileResponse.data.id);
-      console.log(profileResponse.data);
-      console.log(localStorage.getItem('userId'));
 
+      // 4️⃣ Очистка формы и переход
       setEmail('');
       setPassword('');
       setError('');
       navigate('/');
-    } catch (error) {
-      setError(error.response?.data?.message || 'Неверный логин или пароль');
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || 'Неверный логин или пароль');
     }
   };
+
   return (
     <section className='login'>
       <div className='login-container'>

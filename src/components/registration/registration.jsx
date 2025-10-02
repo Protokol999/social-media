@@ -1,6 +1,6 @@
-import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api'; // ✅ импортируем api.js
 import { logo } from '../../assets';
 import './registration.scss';
 
@@ -13,21 +13,21 @@ export const Registration = ({ setUser }) => {
   const handleRegister = async e => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        'https://c8e85948dcc9.ngrok-free.app/api/v1/auth/register',
-        { email, username, password }
-      );
+      // 1️⃣ Регистрация пользователя
+      const response = await api.post('/auth/register', {
+        email,
+        username,
+        password
+      });
 
-      const accessToken = response.data.accessToken;
+      const { accessToken, refreshToken } = response.data;
       localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
 
-      const profileResponse = await axios.get(
-        'https://c8e85948dcc9.ngrok-free.app/api/v1/auth/me',
-        { headers: { Authorization: `Bearer ${accessToken}` } }
-      );
-
+      // 2️⃣ Получаем профиль нового пользователя
+      const profileResponse = await api.get('/auth/me');
       localStorage.setItem('userId', profileResponse.data.id);
-      localStorage.setItem('isNewUser', 'true'); // ⚡ пометка нового пользователя
+      localStorage.setItem('isNewUser', 'true'); // пометка нового пользователя
       setUser(profileResponse.data);
 
       setEmail('');
