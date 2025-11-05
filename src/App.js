@@ -15,6 +15,7 @@ import { Profile } from './pages/profile/profile';
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const isNewUser = localStorage.getItem('isNewUser') === 'true';
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -44,7 +45,13 @@ function App() {
         <Routes>
           <Route
             path='/'
-            element={user ? <Navigate to='/home' /> : <Navigate to='/login' />}
+            element={
+              !user ? (
+                <Navigate to='/login' />
+              ) : (
+                <Home />
+              )
+            }
           />
 
           {/* Приватные маршруты */}
@@ -77,6 +84,8 @@ function App() {
             element={
               !user ? (
                 <Registration setUser={setUser} />
+              ) : isNewUser ? (
+                <Navigate to='/update-user' />
               ) : (
                 <Navigate to='/home' />
               )

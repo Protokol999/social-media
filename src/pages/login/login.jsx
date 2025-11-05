@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FaEnvelope, FaLock, FaSignInAlt } from 'react-icons/fa';
 import api from '../../api';
 import { logo } from '../../assets';
 import './login.scss';
@@ -46,38 +47,60 @@ export const Login = ({ setUser }) => {
   return (
     <section className='login'>
       <div className='login-container'>
-        <img className='login__image' src={logo} alt='logo' />
-        <div className='login__form'>
-          <div className='login__header'>
-            <h1 className='login__title'>GS Social</h1>
-            <h2>Добро пожаловать на нашу социальную сеть</h2>
+        <div className='login__left'>
+          <img className='login__image' src={logo} alt='logo' />
+          <div className='login__brand'>
+            <h1>GS Social</h1>
+            <p>Подключайтесь к миру</p>
           </div>
+        </div>
 
-          <div className='login__form-container'>
+        <div className='login__right'>
+          <div className='login__form-wrapper'>
+            <div className='login__header'>
+              <h2>Вход в аккаунт</h2>
+              <p>Добро пожаловать назад!</p>
+            </div>
+
             <form className='login__form' onSubmit={handleLogin}>
-              <input
-                type='text'
-                placeholder='Email'
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-              />
-              <input
-                type='password'
-                placeholder='Пароль'
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-              />
+              <div className='input-group'>
+                <FaEnvelope className='input-icon' />
+                <input
+                  type='text'
+                  placeholder='Email'
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                />
+              </div>
+
+              <div className='input-group'>
+                <FaLock className='input-icon' />
+                <input
+                  type='password'
+                  placeholder='Пароль'
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                />
+              </div>
+
               {error && <div className='login__error'>{error}</div>}
+
               <Link className='login__forgot-password' to='/forgot-password'>
                 Забыли пароль?
               </Link>
-              <button type='submit'>Войти</button>
-              <hr />
-              <span className='login__register-prompt'>
-                Либо пройдите регистрацию если у вас нет аккаунта
-                <br />
+
+              <button type='submit' className='login__button'>
+                <FaSignInAlt /> Войти
+              </button>
+
+              <div className='login__divider'>
+                <span>ИЛИ</span>
+              </div>
+
+              <p className='login__register-prompt'>
+                Нет аккаунта?{' '}
                 <Link to='/registration'>Зарегистрироваться</Link>
-              </span>
+              </p>
             </form>
           </div>
         </div>

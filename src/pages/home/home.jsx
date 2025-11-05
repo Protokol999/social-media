@@ -1,10 +1,17 @@
+import { PostList } from '../../components/postList/postList';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import './home.scss';
+
 export const Home = () => {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
   return (
     <section className='home'>
       <Sidebar />
-      <h1 className='home__title'>Home Page</h1>
+      <div className='home__content'>
+        <h1 className='home__title'>Лента постов</h1>
+        <PostList currentUser={currentUser} />
+      </div>
     </section>
   );
 };

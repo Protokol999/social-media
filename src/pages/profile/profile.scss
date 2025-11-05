@@ -1,310 +1,539 @@
+// ========================================
+// MODERN PROFILE STYLES
+// ========================================
+
 .profile-container {
   display: flex;
-  background-color: #f7f9fc;
-  font-family: 'Inter', sans-serif; /* Используем современный шрифт */
-  color: #2d3436;
-  flex-direction: row;
-  min-height: 100vh; /* Гарантируем, что фон занимает всю высоту */
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.profile-main-content-wrapper {
-  flex: 9;
-  padding: 20px 40px; /* Увеличил горизонтальный отступ */
+.profile-main-content {
+  flex: 1;
+  padding: 20px;
   overflow-y: auto;
-  background-color: #f7f9fc;
-  width: 100%; /* Убедимся, что занимает всю ширину контейнера */
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-/* ==================================== */
-/* 1. COVER AND HEADER AREA */
-/* ==================================== */
+// ========================================
+// LOADING & ERROR STATES
+// ========================================
 
-.cover {
-  height: 250px;
-  background-color: #6a89cc; /* Насыщенный, но мягкий синий */
-  border-radius: 12px;
-  margin-bottom: -70px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15); /* Более выразительная тень */
-}
-
-/* 2. ВЕРХНИЙ ГОРИЗОНТАЛЬНЫЙ РЯД (Аватар + Инфо) */
-.profile-top-row {
+.loading-wrapper,
+.error-wrapper {
   display: flex;
-  gap: 30px;
-  margin-top: -60px;
-  padding: 0 30px;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: white;
+  font-size: 18px;
 }
 
-/* 2A. Блок Хедера (Аватар, Имя, Кнопки) */
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ========================================
+// COVER SECTION
+// ========================================
+
+.cover-section {
+  height: 280px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: -80px;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.cover-gradient {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    #667eea 0%, 
+    #764ba2 50%, 
+    #f093fb 100%
+  );
+  animation: gradientShift 10s ease infinite;
+  background-size: 200% 200%;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+// ========================================
+// PROFILE HEADER
+// ========================================
+
 .profile-header {
-  flex: 3;
+  background: white;
+  border-radius: 20px;
+  padding: 100px 40px 40px;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 20px;
-  padding-bottom: 20px;
+  position: relative;
+  animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Avatar with ring effect
+.avatar-wrapper {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .avatar {
   width: 160px;
   height: 160px;
   border-radius: 50%;
-  background: #dfe6e9;
-  border: 6px solid #fff;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: translateY(-80px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 6px solid white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 2;
   transition: transform 0.3s ease;
-}
 
-.avatar:hover {
-  transform: translateY(-82px) scale(1.02);
-}
+  &:hover {
+    transform: scale(1.05);
+  }
 
-.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
 .avatar-placeholder {
-  font-size: 50px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
   font-weight: 700;
-  color: #535c68;
+  color: white;
+  text-transform: uppercase;
 }
 
-.header-info {
+.avatar-ring {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  z-index: 1;
+  opacity: 0.5;
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.3;
+  }
+}
+
+// User info
+.user-info {
+  margin: 20px 0 30px;
+}
+
+.user-name {
+  font-size: 36px;
+  font-weight: 700;
+  color: #2d3436;
+  margin: 0 0 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.user-username {
+  font-size: 16px;
+  color: #636e72;
+  margin: 0;
+}
+
+// Action buttons
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+
+  &:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+  }
+}
+
+.btn-secondary {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+
+  &:hover {
+    background: #667eea;
+    color: white;
+  }
+}
+
+// ========================================
+// PROFILE GRID
+// ========================================
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 30px;
+  animation: fadeInUp 0.6s ease 0.2s backwards;
+}
+
+// ========================================
+// CARDS
+// ========================================
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f1f3f5;
+  position: relative;
+
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #2d3436;
+  }
+
+  .badge {
+    margin-left: auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+.card-icon {
+  font-size: 24px;
+  color: #667eea;
+}
+
+.card-body {
+  color: #636e72;
+  line-height: 1.6;
+}
+
+// ========================================
+// INFO SECTION
+// ========================================
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.info-item {
+  display: flex;
+  gap: 15px;
+  padding: 15px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #f1f3f5;
+  }
+}
+
+.info-icon {
+  font-size: 20px;
+  color: #667eea;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.info-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b2bec3;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+}
+
+.info-value {
+  margin: 0;
+  font-size: 15px;
+  color: #2d3436;
+  font-weight: 500;
+}
+
+// Social links
+.social-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    margin-bottom: 12px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.social-link {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  transition: all 0.3s ease;
+  word-break: break-all;
+
+  &:hover {
+    color: #764ba2;
+    transform: translateX(5px);
+  }
+
+  &::before {
+    content: '🔗';
+    font-size: 16px;
+  }
+}
+
+.empty-state {
+  color: #b2bec3;
+  font-style: italic;
+  margin: 0;
+}
+
+// ========================================
+// POSTS SECTION
+// ========================================
+
+.posts-section {
+  min-height: 500px;
+}
+
+.empty-posts {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: -50px;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
 }
 
-.header-info h2 {
+.empty-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+  opacity: 0.3;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.empty-posts p {
+  color: #b2bec3;
+  font-size: 16px;
   margin: 0;
-  font-size: 34px;
-  font-weight: 700;
-  color: #2c3e50;
 }
 
-.header-buttons {
-  margin: 15px;
-  display: flex;
-  gap: 12px;
-}
+// ========================================
+// RESPONSIVE DESIGN
+// ========================================
 
-.header-buttons button {
-  background: #0984e3;
-  color: #fff;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 10px rgba(9, 132, 227, 0.4);
-}
-
-.header-buttons button:hover {
-  background: #0069d9;
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(9, 132, 227, 0.6);
-}
-
-.info-cards-wrapper {
-  flex: 9;
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  padding-top: 20px;
-}
-
-.info-cards-wrapper .info-card {
-  flex: 1;
-}
-
-.posts-section {
-  padding: 0 30px 30px 30px;
-  margin: 20px;
-}
-
-/* Общие стили для карточек */
-.info-card,
-.posts-card {
-  background: #fff;
-  padding: 25px;
-  border-radius: 15px;
-  border: 1px solid #e1e7f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.3s ease;
-}
-
-.info-card:hover,
-.posts-card:hover {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-}
-
-.info-card h3,
-.posts-card h3 {
-  margin-top: 0;
-  border-bottom: 1px solid #e1e7f0;
-  padding-bottom: 12px;
-  font-size: 19px;
-  color: #0984e3;
-  font-weight: 600;
-}
-
-.info-card p {
-  line-height: 1.6;
-  margin-bottom: 10px;
-  font-size: 15px;
-}
-
-.info-card b {
-  color: #34495e;
-  font-weight: 600;
-}
-
-/* Улучшение стилей для ссылок в Соцсетях */
-.info-card ul {
-  list-style: none;
-  padding: 0;
-}
-
-.info-card ul li {
-  margin-bottom: 8px;
-}
-
-.info-card ul li a {
-  color: #0984e3;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.info-card ul li a:hover {
-  color: #0069d9;
-  text-decoration: underline;
-}
-
-/* Для планшетов и экранов до 1024px */
 @media (max-width: 1024px) {
-  .profile-container {
-    flex-direction: column; /* Сайдбар и основной контент идут друг за другом */
-  }
-
-  /* Основной контент теперь занимает всю ширину */
-  .profile-main-content-wrapper {
-    flex: none;
-    padding: 10px 20px;
-  }
-
-  /* Обложка занимает всю ширину */
-  .cover {
-    height: 200px; /* Немного уменьшим высоту обложки */
-  }
-
-  /* Горизонтальный ряд разбивается на колонку */
-  .profile-top-row {
-    flex-direction: column; /* Аватар + Инфо идут друг под другом */
+  .profile-grid {
+    grid-template-columns: 1fr;
     gap: 20px;
-    padding: 0 10px;
-    margin-top: -40px; /* Меньше отступ */
   }
 
-  /* Блок Хедера (Аватар, Имя, Кнопки) */
+  .info-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-main-content {
+    padding: 15px;
+  }
+
+  .cover-section {
+    height: 200px;
+    margin-bottom: -60px;
+  }
+
   .profile-header {
-    flex: none; /* Убираем фиксированный flex */
-    align-items: center;
-    padding-bottom: 0;
+    padding: 80px 20px 30px;
+  }
+
+  .avatar-wrapper {
+    top: -60px;
   }
 
   .avatar {
-    width: 140px;
-    height: 140px;
-    transform: translateY(-70px); /* Смещение аватара */
-    margin-bottom: -70px; /* Компенсация, чтобы следующий блок поднялся */
+    width: 120px;
+    height: 120px;
+    border-width: 4px;
   }
 
-  .header-info {
-    margin-top: 0;
-    padding-top: 10px;
+  .avatar-placeholder {
+    font-size: 40px;
   }
 
-  /* Инфо-карточки (Правая часть top-row) */
-  .info-cards-wrapper {
-    flex: none;
-    flex-direction: row; /* Пока оставляем горизонтально, но дадим им возможность переноситься */
-    flex-wrap: wrap;
-    padding-top: 0;
+  .user-name {
+    font-size: 28px;
   }
 
-  .info-cards-wrapper .info-card {
-    flex: 1 1 calc(50% - 10px); /* По две карточки в ряд */
+  .action-buttons {
+    flex-direction: column;
+    width: 100%;
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
   }
 
-  /* Секция постов */
-  .posts-section {
-    padding: 0 10px 20px 10px;
+  .info-section {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .profile-grid {
+    gap: 15px;
   }
 }
 
-/* Для мобильных устройств до 768px */
-@media (max-width: 768px) {
-  .profile-main-content-wrapper {
-    padding: 10px 15px;
-  }
-
-  .cover {
+@media (max-width: 480px) {
+  .cover-section {
     height: 150px;
   }
 
   .avatar {
     width: 100px;
     height: 100px;
-    border-width: 4px;
-    transform: translateY(-50px);
-    margin-bottom: -50px;
   }
 
   .avatar-placeholder {
-    font-size: 30px;
+    font-size: 32px;
   }
 
-  .header-info h2 {
-    font-size: 28px;
+  .user-name {
+    font-size: 24px;
   }
 
-  .header-buttons {
-    flex-direction: column; /* Кнопки одна под другой */
-    gap: 10px;
-    width: 100%;
+  .card-header h3 {
+    font-size: 18px;
   }
 
-  .header-buttons button {
-    padding: 12px;
-  }
-
-  /* Инфо-карточки - теперь одна под другой */
-  .info-cards-wrapper {
+  .info-item {
     flex-direction: column;
-    gap: 15px;
-  }
-
-  .info-cards-wrapper .info-card {
-    flex: 1 1 100%; /* Каждая карточка занимает всю ширину */
-  }
-
-  /* Убираем лишние отступы, чтобы максимизировать область просмотра */
-  .profile-top-row {
-    padding: 0 5px;
-  }
-
-  .posts-section {
-    padding: 0 5px 15px 5px;
+    gap: 8px;
   }
 }

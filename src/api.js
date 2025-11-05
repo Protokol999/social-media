@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://6b81dfa9afe0.ngrok-free.app/api/v1',
+  baseURL: 'https://39ad7079a932.ngrok-free.app/api/v1',
   headers: { 'ngrok-skip-browser-warning': 'true' }
 });
 
@@ -27,7 +27,7 @@ api.interceptors.response.use(
       if (refreshToken) {
         try {
           const res = await axios.post(
-            'https://6b81dfa9afe0.ngrok-free.app/api/v1/auth/refresh',
+            'https://39ad7079a932.ngrok-free.app/api/v1/auth/refresh',
             { refreshToken },
             { headers: { 'ngrok-skip-browser-warning': 'true' } }
           );
