@@ -35,10 +35,10 @@
   font-size: 15px;
   line-height: 1.4;
 }
-.post-card__image {
+.post-card__image-wrapper {
   margin-top: 10px;
 }
-.post-card__image img {
+.post-card__image-wrapper img {
   width: 100%;
   border-radius: 10px;
   -o-object-fit: cover;
@@ -63,8 +63,8 @@
 .post-card__actions button:hover {
   transform: scale(1.05);
 }
-.post-card__actions button.liked {
-  color: #e53935;
+.post-card__actions button.liked svg {
+  fill: red;
 }
 .post-card__actions button:disabled {
   opacity: 0.5;

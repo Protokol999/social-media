@@ -40,7 +40,7 @@
     line-height: 1.4;
   }
 
-  &__image {
+  &__image-wrapper {
     margin-top: 10px;
 
     img {
@@ -71,7 +71,9 @@
       }
 
       &.liked {
-        color: #e53935;
+        svg {
+          fill: red;
+        }
       }
 
       &:disabled {

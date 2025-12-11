@@ -1,3 +1,4 @@
+import { FriendList } from '../../components/friendList/friendList';
 import { PostList } from '../../components/postList/postList';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import './home.scss';
@@ -11,6 +12,7 @@ export const Home = () => {
       <div className='home__content'>
         <h1 className='home__title'>Лента постов</h1>
         <PostList currentUser={currentUser} />
+        <FriendList onlyFollowing={true} />
       </div>
     </section>
   );

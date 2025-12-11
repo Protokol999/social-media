@@ -8,7 +8,8 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
 }
 
 .navbar-container {
@@ -210,6 +211,137 @@
     height: 50px;
   }
 }
+/* ============================== */
+/* 🔔 NOTIFICATION DROPDOWN       */
+/* ============================== */
+
+.notif-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  width: 340px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+  padding: 10px 0;
+  z-index: 999;
+  animation: notifFade 0.22s ease;
+  overflow: hidden;
+}
+
+@keyframes notifFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notif-empty {
+  padding: 18px;
+  text-align: center;
+  color: #95a5a6;
+  font-size: 14px;
+}
+
+/* Controls (Прочитать все, Очистить все) */
+.notif-controls {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid #f1f2f6;
+
+  button {
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #667eea;
+    transition: 0.2s;
+
+    &:hover {
+      color: #5563d6;
+    }
+
+    &.delete {
+      color: #ff6b6b;
+
+      &:hover {
+        color: #e05656;
+      }
+    }
+  }
+}
+
+/* Notification Item */
+.notif-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f5f6fa;
+  cursor: pointer;
+  transition: 0.25s ease;
+
+  &:hover {
+    background: #f8f9fc;
+  }
+
+  &.unread {
+    background: #f0f4ff;
+
+    &:hover {
+      background: #e8edff;
+    }
+  }
+}
+
+.notif-text {
+  font-size: 14px;
+  color: #2d3436;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+/* Notification item actions */
+.notif-actions {
+  display: flex;
+  gap: 10px;
+
+  button {
+    border: none;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  button:not(.delete) {
+    background: #e3e9ff;
+    color: #5563d6;
+
+    &:hover {
+      background: #d5dcff;
+    }
+  }
+
+  .delete {
+    background: #ffe4e4;
+    color: #d63031;
+
+    &:hover {
+      background: #ffd3d3;
+    }
+  }
+}
+
+/* FIX: чтобы dropdown не ломал layout */
+.notifications {
+  position: relative;
+}
 
 @media (max-width: 480px) {
   .nav-icon {
@@ -221,4 +353,99 @@
     width: 44px;
     height: 44px;
   }
+}
+/* SEARCH DROPDOWN */
+
+.search-dropdown {
+  position: absolute;
+  top: 55px;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  z-index: 500;
+  max-height: 450px;
+  overflow-y: auto;
+  animation: dropdownFade 0.2s ease;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-header {
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 14px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.dropdown-section {
+  padding: 8px 0;
+}
+
+.section-title {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #7f8c8d;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: #2d3436;
+  transition: 0.25s ease;
+  border-bottom: 1px solid #f2f2f2;
+
+  &:hover {
+    background: #f7f9fc;
+  }
+}
+
+.item-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.post-thumb {
+  border-radius: 8px !important;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 18px;
+}
+
+.item-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.item-sub {
+  font-size: 13px;
+  color: #95a5a6;
+}
+
+.dropdown-empty {
+  padding: 20px;
+  text-align: center;
+  color: #95a5a6;
+  font-size: 14px;
 }

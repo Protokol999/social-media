@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
-import api from './api';
+import api from './api/api';
+import { ChatPage } from './components/chatPage/chatPage';
+import { Message } from './pages/message/message';
+
 import { ForgotPassword } from './components/forgotPassword/forgotPassword';
 import { Navbar } from './components/navbar/navbar';
 import { Registration } from './components/registration/registration';
@@ -9,7 +12,6 @@ import { ResetPassword } from './components/resetPassword/resetPassword';
 import { UpdateUser } from './components/updateUser/updateUser';
 import { Home } from './pages/home/home';
 import { Login } from './pages/login/login';
-import { Message } from './pages/message/message';
 import { Profile } from './pages/profile/profile';
 
 function App() {
@@ -45,13 +47,7 @@ function App() {
         <Routes>
           <Route
             path='/'
-            element={
-              !user ? (
-                <Navigate to='/login' />
-              ) : (
-                <Home />
-              )
-            }
+            element={!user ? <Navigate to='/login' /> : <Home />}
           />
 
           {/* Приватные маршруты */}
@@ -62,11 +58,23 @@ function App() {
           <Route
             path='/message'
             element={user ? <Message /> : <Navigate to='/login' />}
-          />
+          >
+            <Route
+              index
+              element={<div className='select-chat-tip'>Выберите чат</div>}
+            />
+            <Route path=':id' element={<ChatPage />} />
+          </Route>
+
           <Route
             path='/profile'
             element={user ? <Profile /> : <Navigate to='/login' />}
           />
+          <Route
+            path='/profile/:id'
+            element={user ? <Profile /> : <Navigate to='/login' />}
+          />
+
           <Route
             path='/update-user'
             element={user ? <UpdateUser /> : <Navigate to='/login' />}

@@ -1,7 +1,18 @@
 import { useState } from 'react';
+import {
+  FaCalendar,
+  FaCamera,
+  FaFacebook,
+  FaGithub,
+  FaInstagram,
+  FaLinkedin,
+  FaSave,
+  FaTelegram,
+  FaTwitter,
+  FaUser
+} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { FaUser, FaCalendar, FaCamera, FaSave, FaFacebook, FaInstagram, FaTwitter, FaLinkedin, FaGithub, FaTelegram } from 'react-icons/fa';
-import api from '../../api';
+import api from '../../api/api';
 import './updateUser.scss';
 
 export const UpdateUser = () => {

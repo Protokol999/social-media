@@ -1,0 +1,90 @@
+.tg-chat-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #e8edf2;
+
+  .tg-chat-header {
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    padding: 12px;
+
+    .tg-header-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      margin-right: 12px;
+    }
+
+    .tg-header-name {
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+
+  .tg-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tg-msg {
+    max-width: 70%;
+    background: #fff;
+    padding: 10px 14px;
+    border-radius: 10px 10px 10px 0;
+    align-self: flex-start;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+
+    &.mine {
+      align-self: flex-end;
+      background: #d2f8d2;
+      border-radius: 10px 10px 0 10px;
+    }
+
+    .tg-msg-time {
+      margin-top: 3px;
+      font-size: 11px;
+      color: #777;
+      text-align: right;
+    }
+  }
+
+  .tg-input-box {
+    display: flex;
+    padding: 10px;
+    background: #fff;
+    border-top: 1px solid #ddd;
+
+    input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      outline: none;
+      font-size: 15px;
+    }
+
+    .tg-send-btn {
+      margin-left: 10px;
+      background: #3da1ff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: 0.2s;
+
+      &:hover {
+        background: #1d8dff;
+      }
+    }
+  }
+}

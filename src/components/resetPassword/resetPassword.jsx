@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import api from '../../api'; // ✅ импортируем api.js
+import api from '../../api/api'; // ✅ импортируем api.js
 import './resetPassword.scss';
 
 export const ResetPassword = ({ setUser }) => {

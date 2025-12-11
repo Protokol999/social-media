@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { FaCamera, FaImage, FaSmile } from 'react-icons/fa';
-import api from '../../api';
+import api from '../../api/api';
 import './addPost.scss';
 
 export const AddPost = ({ onPostAdded, currentUser }) => {
-  const [text, setText] = useState('');
+  const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
-  const [prewiew, setPreview] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleImageChange = e => {
@@ -16,6 +16,7 @@ export const AddPost = ({ onPostAdded, currentUser }) => {
       setPreview(URL.createObjectURL(file));
     }
   };
+
   const clearImage = () => {
     setImage(null);
     setPreview(null);
@@ -23,23 +24,40 @@ export const AddPost = ({ onPostAdded, currentUser }) => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (!text.trim() && !image) return;
-
-    const formData = new FormData();
-    if (image) formData.append('image', image);
+    if (!content.trim() && !image) return;
 
     try {
       setLoading(true);
-      const response = await api.post('/posts', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      if (onPostAdded) onPostAdded(response.data);
+
+      let imageBase64 = null;
+      let fileName = null;
+
+      // 🖼️ Конвертируем фото в base64, если выбрано
+      if (image) {
+        imageBase64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(image);
+          reader.onload = () => resolve(reader.result.split(',')[1]); // убираем "data:image/png;base64,"
+          reader.onerror = err => reject(err);
+        });
+        fileName = image.name;
+      }
+
+      // 📦 Отправляем всё в одном запросе
+      const postData = {
+        content,
+        image: imageBase64,
+        fileName
+      };
+
+      const response = await api.post('/posts', postData);
+      const createdPost = response.data;
+
+      if (onPostAdded) onPostAdded(createdPost);
       clearImage();
-      setText('');
+      setContent('');
     } catch (error) {
-      console.error('Error adding post:', error);
+      console.error('Ошибка при добавлении поста:', error);
     } finally {
       setLoading(false);
     }
@@ -61,17 +79,17 @@ export const AddPost = ({ onPostAdded, currentUser }) => {
           )}
         </div>
         <textarea
-          value={text}
-          onChange={e => setText(e.target.value)}
+          value={content}
+          onChange={e => setContent(e.target.value)}
           placeholder='Что у вас нового?'
           className='add-post__textarea'
           rows={3}
         />
       </div>
 
-      {prewiew && (
+      {preview && (
         <div className='add-post__preview'>
-          <img src={prewiew} alt='preview' />
+          <img src={preview} alt='preview' />
           <button
             type='button'
             className='add-post__remove'

@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import { FaEnvelope, FaLock, FaUser, FaUserPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { FaEnvelope, FaUser, FaLock, FaUserPlus } from 'react-icons/fa';
-import api from '../../api';
+import api from '../../api/api';
 import { logo } from '../../assets';
 import './registration.scss';
 
@@ -35,7 +35,10 @@ export const Registration = ({ setUser }) => {
 
       navigate('/update-user');
     } catch (error) {
-      console.error('Ошибка при регистрации', error.response?.data || error.message);
+      console.error(
+        'Ошибка при регистрации',
+        error.response?.data || error.message
+      );
       alert(error.response?.data?.message || 'Ошибка при регистрации');
     }
   };

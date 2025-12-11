@@ -1,0 +1,56 @@
+.tg-chat-list {
+  width: 100%;
+  height: 100vh;
+  background: #fff;
+  border-right: 1px solid #ddd;
+
+  .tg-header {
+    font-size: 22px;
+    font-weight: 600;
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    background: #f8f9fa;
+  }
+
+  .tg-chats {
+    overflow-y: auto;
+    height: calc(100vh - 60px);
+  }
+
+  .tg-chat-item {
+    display: flex;
+    padding: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+
+    &:hover {
+      background: #f0f4f7;
+    }
+  }
+
+  .tg-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+
+  .tg-chat-info {
+    margin-left: 12px;
+    width: 100%;
+  }
+
+  .tg-chat-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+  }
+
+  .tg-chat-name {
+    font-weight: 600;
+  }
+
+  .tg-chat-last {
+    font-size: 14px;
+    color: gray;
+  }
+}

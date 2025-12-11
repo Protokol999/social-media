@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import api from '../../api'; // ✅ импортируем api.js
+import api from '../../api/api'; // ✅ импортируем api.js
 import './forgotPassword.scss';
 
 export const ForgotPassword = () => {

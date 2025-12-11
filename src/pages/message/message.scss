@@ -1,0 +1,16 @@
+.tg-layout {
+  display: flex;
+  height: calc(100vh - 60px); // если есть Navbar
+  background: #e8edf2;
+}
+
+.tg-left {
+  width: 32%;
+  border-right: 1px solid #ddd;
+  background: white;
+}
+
+.tg-right {
+  flex: 1;
+  background: #e8edf2;
+}

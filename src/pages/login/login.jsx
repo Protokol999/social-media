@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaLock, FaSignInAlt } from 'react-icons/fa';
-import api from '../../api';
+import { Link, useNavigate } from 'react-router-dom';
+import api from '../../api/api';
 import { logo } from '../../assets';
 import './login.scss';
 
@@ -98,8 +98,7 @@ export const Login = ({ setUser }) => {
               </div>
 
               <p className='login__register-prompt'>
-                Нет аккаунта?{' '}
-                <Link to='/registration'>Зарегистрироваться</Link>
+                Нет аккаунта? <Link to='/registration'>Зарегистрироваться</Link>
               </p>
             </form>
           </div>

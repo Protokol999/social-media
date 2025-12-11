@@ -1,27 +1,45 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaEdit, FaUserPlus, FaEnvelope, FaBirthdayCake, FaInfoCircle, FaGlobe } from 'react-icons/fa';
-import api from '../../api';
+import {
+  FaBirthdayCake,
+  FaEdit,
+  FaEnvelope,
+  FaGlobe,
+  FaInfoCircle,
+  FaUserPlus
+} from 'react-icons/fa';
+import { useNavigate, useParams } from 'react-router-dom';
+import api from '../../api/api';
+import { PostCard } from '../../components/postCard/postCard';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import './profile.scss';
 
 export const Profile = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const currentUserId = localStorage.getItem('userId');
+  const { id } = useParams(); // ⬅️ ВАЖНО: получаем ID из URL
 
+  const loggedId = String(localStorage.getItem('userId'));
+  const profileId = id ?? loggedId; // если нет id → показываем свой профиль
+
+  const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
+
+  const isOwner = profileId === loggedId;
+
+  // ==========================
+  // 📌 Загрузка данных пользователя
+  // ==========================
   useEffect(() => {
     const fetchUser = async () => {
-      if (!currentUserId) {
-        setLoading(false);
-        console.error('ID пользователя не найден.');
-        return;
-      }
-
       try {
-        const response = await api.get(`/users/${currentUserId}`);
-        setUser(response.data);
+        const res = await api.get(`/users/${profileId}`);
+        setUser(res.data);
+
+        if (!isOwner) {
+          setIsFollowing(res.data?.isFollowing || false);
+        }
       } catch (err) {
         console.error('Ошибка загрузки профиля:', err);
       } finally {
@@ -30,8 +48,72 @@ export const Profile = () => {
     };
 
     fetchUser();
-  }, [currentUserId]);
+  }, [profileId, isOwner]);
 
+  // ==========================
+  // 📌 Загрузка постов
+  // ==========================
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await api.get(`/users/${profileId}/posts`);
+
+        const postsArray = Array.isArray(res.data)
+          ? res.data
+          : res.data?.posts || res.data?.data || [];
+
+        const formatted = postsArray
+          .map(p => ({
+            id: p.id || p.ID,
+            userId: p.userId || p.UserId,
+            content: p.content || p.Content,
+            imageUrl: p.imageUrl || p.ImageUrl,
+            createdAt: p.createdAt || p.CreatedAt,
+            likesCount: p.likesCount || p.LikesCount || 0,
+            commentsCount: p.commentsCount || p.CommentsCount || 0
+          }))
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        setPosts(formatted);
+      } catch (err) {
+        console.error('Ошибка загрузки постов:', err);
+      }
+    };
+
+    fetchPosts();
+  }, [profileId]);
+
+  // ==========================
+  // 👥 Follow / Unfollow
+  // ==========================
+  const handleFollow = async () => {
+    try {
+      setFollowLoading(true);
+
+      let res;
+
+      if (isFollowing) {
+        // 🔻 Unfollow
+        res = await api.delete(`/users/${profileId}/follow`);
+        console.log('UNFOLLOW RESPONSE:', res.data);
+        setIsFollowing(false);
+      } else {
+        // 🔺 Follow
+        res = await api.post(`/users/${profileId}/follow`, {});
+        console.log('FOLLOW RESPONSE:', res.data);
+
+        setIsFollowing(true);
+      }
+    } catch (err) {
+      console.error('Ошибка follow/unfollow:', err);
+    } finally {
+      setFollowLoading(false);
+    }
+  };
+
+  // ==========================
+  // UI рендер
+  // ==========================
   if (loading) {
     return (
       <div className='profile-container'>
@@ -59,12 +141,12 @@ export const Profile = () => {
     <div className='profile-container'>
       <Sidebar />
       <div className='profile-main-content'>
-        {/* Cover with gradient */}
+        {/* Cover */}
         <div className='cover-section'>
           <div className='cover-gradient'></div>
         </div>
 
-        {/* Profile Header */}
+        {/* Header */}
         <div className='profile-header'>
           <div className='avatar-wrapper'>
             <div className='avatar'>
@@ -91,84 +173,125 @@ export const Profile = () => {
             <h1 className='user-name'>
               {user.firstName} {user.lastName}
             </h1>
-            <p className='user-username'>@{user.username || 'user'}</p>
+            <p className='user-username'>@{user.username}</p>
           </div>
 
           <div className='action-buttons'>
-            <button className='btn btn-primary' onClick={() => navigate('/update-user')}>
-              <FaEdit /> Редактировать
-            </button>
-            <button className='btn btn-secondary'>
-              <FaUserPlus /> Добавить в друзья
-            </button>
-            <button className='btn btn-secondary'>
-              <FaEnvelope /> Сообщение
-            </button>
+            {isOwner && (
+              <button
+                className='btn btn-primary'
+                onClick={() => navigate('/update-user')}
+              >
+                <FaEdit /> Редактировать
+              </button>
+            )}
+
+            {!isOwner && (
+              <button
+                className='btn btn-secondary'
+                disabled={followLoading}
+                onClick={handleFollow}
+              >
+                <FaUserPlus />
+                {isFollowing ? 'Удалить из друзей' : 'Добавить в друзья'}
+              </button>
+            )}
+
+            {!isOwner && (
+              <button
+                className='btn btn-secondary'
+                onClick={() => navigate(`/message/${profileId}`)}
+              >
+                <FaEnvelope /> Сообщение
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Profile Content Grid */}
+        {/* Profile Content */}
         <div className='profile-grid'>
-          {/* Left Column - Info Cards */}
+          {/* Info cards */}
           <div className='info-section'>
             <div className='card info-card'>
               <div className='card-header'>
                 <FaInfoCircle className='card-icon' />
                 <h3>Информация</h3>
               </div>
+
               <div className='card-body'>
                 <div className='info-item'>
                   <FaBirthdayCake className='info-icon' />
                   <div>
                     <span className='info-label'>Дата рождения</span>
-                    <p className='info-value'>{user.birthDate || 'Не указана'}</p>
+                    <p className='info-value'>{user.birthDate || '—'}</p>
                   </div>
                 </div>
+
                 <div className='info-item'>
                   <FaInfoCircle className='info-icon' />
                   <div>
                     <span className='info-label'>О себе</span>
-                    <p className='info-value'>{user.bio || 'Пока нет информации'}</p>
+                    <p className='info-value'>
+                      {user.bio || 'Пока нет информации'}
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* Social links */}
             <div className='card info-card'>
               <div className='card-header'>
                 <FaGlobe className='card-icon' />
                 <h3>Соцсети</h3>
               </div>
+
               <div className='card-body'>
-                {user.socialLinks && user.socialLinks.length > 0 ? (
+                {user.socialLinks?.length > 0 ? (
                   <ul className='social-links'>
                     {user.socialLinks.map((link, i) => (
                       <li key={i}>
-                        <a href={link} target='_blank' rel='noreferrer' className='social-link'>
+                        <a
+                          href={link}
+                          target='_blank'
+                          rel='noreferrer'
+                          className='social-link'
+                        >
                           {link}
                         </a>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className='empty-state'>Пользователь не добавил соц.сети</p>
+                  <p className='empty-state'>Нет соц. сетей</p>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Right Column - Posts */}
+          {/* Posts section */}
           <div className='posts-section'>
             <div className='card posts-card'>
               <div className='card-header'>
                 <h3>Посты</h3>
-                <span className='badge'>0</span>
+                <span className='badge'>{posts.length}</span>
               </div>
+
               <div className='card-body'>
-                <div className='empty-posts'>
-                  <div className='empty-icon'>📝</div>
-                  <p>Пользователь пока ничего не публиковал</p>
-                </div>
+                {posts.length === 0 ? (
+                  <div className='empty-posts'>
+                    <div className='empty-icon'>📝</div>
+                    <p>Пока нет постов</p>
+                  </div>
+                ) : (
+                  posts.map(post => (
+                    <PostCard
+                      key={post.id}
+                      post={post}
+                      currentUserId={loggedId}
+                    />
+                  ))
+                )}
               </div>
             </div>
           </div>
