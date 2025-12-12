@@ -11,6 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../api/api';
 import { PostCard } from '../../components/postCard/postCard';
 import { Sidebar } from '../../components/sidebar/sidebar';
+import { useChatStore } from '../../store/useChatStore';
 import './profile.scss';
 
 export const Profile = () => {
@@ -110,6 +111,38 @@ export const Profile = () => {
       setFollowLoading(false);
     }
   };
+  const handleOpenChat = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+
+      // 1️⃣ загружаем список чатов
+      const chats = useChatStore.getState().chats;
+
+      // 2️⃣ ищем чат, где участники — вы и profileId
+      const existing = chats.find(
+        c =>
+          c.participants.includes(userId) && c.participants.includes(profileId)
+      );
+
+      if (existing) {
+        console.log('Чат уже существует → открываем:', existing.id);
+        navigate(`/message/${existing.id}`);
+        return;
+      }
+
+      // 3️⃣ если чата нет → создаём новый
+      const res = await api.post('/chats', {
+        participants: [profileId]
+      });
+
+      const chatId = res.data.id;
+
+      // 4️⃣ переходим в чат
+      navigate(`/message/${chatId}`);
+    } catch (err) {
+      console.error('Ошибка создания чата:', err);
+    }
+  };
 
   // ==========================
   // UI рендер
@@ -198,10 +231,7 @@ export const Profile = () => {
             )}
 
             {!isOwner && (
-              <button
-                className='btn btn-secondary'
-                onClick={() => navigate(`/message/${profileId}`)}
-              >
+              <button className='btn btn-secondary' onClick={handleOpenChat}>
                 <FaEnvelope /> Сообщение
               </button>
             )}

@@ -1,150 +1,214 @@
+// src/store/useChatStore.js
 import { create } from 'zustand';
-import api from '../api/api';
+import {
+  grpcListChats,
+  grpcListMessages,
+  grpcSendMessage
+} from '../chat/chatClient';
 import { createChatStream } from '../chat/stream';
+
+// --- функция для защиты от дублей ---
+function safeAddMessage(state, chatId, msg) {
+  const arr = state.messages[chatId] || [];
+
+  // если сообщение уже существует — не добавляем
+  if (arr.some(m => m.id === msg.id)) return arr;
+
+  return [...arr, msg];
+}
 
 export const useChatStore = create((set, get) => ({
   chats: [],
-  messages: {}, // { chatId: [msg, msg...] }
-  streams: {}, // active streams per chatId
+  messages: {}, // { [chatId]: Message[] }
+  streams: {}, // { [chatId]: cancelFn }
+  streamStatus: {}, // { [chatId]: 'connected' | 'connecting' | 'disconnected' }
   activeChat: null,
+  loadingChats: false,
+  loadingMessages: false,
 
-  // ================================
-  // ЗАГРУЗКА СПИСКА ЧАТОВ
-  // ================================
+  // ===== ЧАТЫ =====
   loadChats: async () => {
     try {
-      const res = await api.get('/chats');
-      set({ chats: res.data.chats || [] });
+      set({ loadingChats: true });
+      const chats = await grpcListChats();
+
+      console.log('🔥 ЧАТЫ ПРИШЛИ С БЭКА:', chats);
+
+      set({ chats, loadingChats: false });
     } catch (err) {
-      console.error('Ошибка загрузки чатов:', err);
-      set({ chats: [] });
+      console.error('❌ loadChats error:', err);
+      if (err.message) console.error('Error message:', err.message);
+      if (err.code) console.error('Error code:', err.code);
+      set({ loadingChats: false, chats: [] });
     }
   },
 
-  // ================================
-  // ЗАГРУЗКА ИСТОРИИ СООБЩЕНИЙ
-  // ================================
+  // ===== СООБЩЕНИЯ =====
   loadMessages: async chatId => {
+    const id = String(chatId);
     try {
-      const res = await api.get(`/chats/${chatId}/messages`);
-      const list = res.data?.messages || res.data || [];
+      set({ loadingMessages: true });
+
+      const msgs = await grpcListMessages(id);
 
       set(state => ({
         messages: {
           ...state.messages,
-          [chatId]: list
-        }
+          [id]: msgs
+        },
+        loadingMessages: false
       }));
     } catch (err) {
-      console.error('Ошибка загрузки сообщений:', err);
+      console.error('❌ loadMessages error:', err);
+      if (err.message) console.error('Error message:', err.message);
+      set(state => ({
+        messages: {
+          ...state.messages,
+          [id]: []
+        },
+        loadingMessages: false
+      }));
     }
   },
 
-  // ================================
-  // ОТПРАВКА СООБЩЕНИЯ
-  // ================================
-  sendMessage: async (chatId, text) => {
-    const tempId = 'tmp_' + Math.random();
+  // ===== ОТПРАВКА =====
+  sendMessage: async (chatId, content) => {
+    const id = String(chatId);
+    try {
+      const msg = await grpcSendMessage(id, content);
 
-    const userId = localStorage.getItem('userId');
+      set(state => ({
+        messages: {
+          ...state.messages,
+          [id]: safeAddMessage(state, id, msg)
+        }
+      }));
 
-    // Добавляем сообщение как pending
+      return msg;
+    } catch (err) {
+      console.error('❌ sendMessage error:', err);
+      if (err.message) console.error('Error message:', err.message);
+      throw err;
+    }
+  },
+
+  // ===== АКТИВНЫЙ ЧАТ =====
+  setActiveChat: chatId => {
+    const id = String(chatId);
+    const { activeChat, stopAllStreams, startChatStream, loadMessages } = get();
+
+    if (activeChat === id) return;
+
+    // Останавливаем все старые стримы
+    stopAllStreams();
+
+    // Устанавливаем новый активный чат
+    set({ activeChat: id });
+
+    // Загружаем сообщения
+    loadMessages(id);
+
+    // Запускаем стрим для нового чата
+    startChatStream(id);
+  },
+
+  // ===== СТРИМ =====
+  startChatStream: chatId => {
+    const id = String(chatId);
+    const { streams, streamStatus } = get();
+
+    if (streams[id]) {
+      console.log('⚠️ Stream already exists for chat:', id);
+      return;
+    }
+
+    console.log('🔔 Starting notification stream for chat:', id);
+
+    // Устанавливаем статус подключения
     set(state => ({
-      messages: {
-        ...state.messages,
-        [chatId]: [
-          ...(state.messages[chatId] || []),
-          {
-            id: tempId,
-            chatId,
-            senderId: userId,
-            text,
-            createdAt: new Date().toISOString(),
-            status: 'pending'
-          }
-        ]
-      }
+      streamStatus: { ...state.streamStatus, [id]: 'connecting' }
     }));
 
     try {
-      const res = await api.post(`/chats/${chatId}/messages`, {
-        content: text
-      });
-      const real = res.data;
-
-      // Заменяем временное сообщение реальным
-      set(state => ({
-        messages: {
-          ...state.messages,
-          [chatId]: state.messages[chatId].map(m =>
-            m.id === tempId ? real : m
-          )
+      const cancel = createChatStream(id, {
+        onMessage: msg => {
+          console.log('📩 New message from stream:', msg);
+          set(state => ({
+            messages: {
+              ...state.messages,
+              [id]: safeAddMessage(state, id, msg)
+            }
+          }));
+        },
+        onConnect: () => {
+          console.log('✅ Stream connected for chat:', id);
+          set(state => ({
+            streamStatus: { ...state.streamStatus, [id]: 'connected' }
+          }));
+        },
+        onDisconnect: () => {
+          console.log('⚠️ Stream disconnected for chat:', id);
+          set(state => ({
+            streamStatus: { ...state.streamStatus, [id]: 'disconnected' }
+          }));
+        },
+        onReconnect: () => {
+          console.log('🔄 Stream reconnecting for chat:', id);
+          set(state => ({
+            streamStatus: { ...state.streamStatus, [id]: 'connecting' }
+          }));
         }
+      });
+
+      set(state => ({
+        streams: { ...state.streams, [id]: cancel }
       }));
     } catch (err) {
-      console.error('Ошибка отправки сообщения:', err);
-
-      // Помечаем как failed
+      console.error('❌ startChatStream error:', err);
       set(state => ({
-        messages: {
-          ...state.messages,
-          [chatId]: state.messages[chatId].map(m =>
-            m.id === tempId ? { ...m, status: 'failed' } : m
-          )
-        }
+        streamStatus: { ...state.streamStatus, [id]: 'disconnected' }
       }));
     }
   },
 
-  // ================================
-  // АКТИВНЫЙ ЧАТ + СТРИМ
-  // ================================
-  setActiveChat: chatId => {
+  // ===== СТОП СТРИМА =====
+  stopChatStream: chatId => {
+    const id = String(chatId);
     const { streams } = get();
 
-    // Закрываем предыдущий стрим
-    Object.values(streams).forEach(cancel => cancel && cancel());
+    if (streams[id] && typeof streams[id] === 'function') {
+      console.log('⛔️ Stopping stream for chat:', id);
+      streams[id]();
 
-    // Сбрасываем стримы
-    set({ streams: {}, activeChat: chatId });
+      set(state => {
+        const newStreams = { ...state.streams };
+        const newStatus = { ...state.streamStatus };
+        delete newStreams[id];
+        delete newStatus[id];
 
-    // Запускаем стрим только для выбранного чата
-    const cancel = createChatStream(chatId, {
-      onMessage: msg => {
-        set(state => ({
-          messages: {
-            ...state.messages,
-            [chatId]: [...(state.messages[chatId] || []), msg]
-          },
-          chats: state.chats.map(c =>
-            c.id === chatId ? { ...c, lastMessage: msg.text } : c
-          )
-        }));
-      },
+        return { streams: newStreams, streamStatus: newStatus };
+      });
+    }
+  },
 
-      onError: err => {
-        console.warn('Stream error — reconnect in 3s...', err);
+  // ===== СТОП ВСЕХ СТРИМОВ =====
+  stopAllStreams: () => {
+    const { streams } = get();
+    console.log('⛔️ Stopping all streams...');
 
-        setTimeout(() => {
-          get().setActiveChat(chatId);
-        }, 3000);
+    Object.entries(streams).forEach(([chatId, fn]) => {
+      if (typeof fn === 'function') {
+        console.log('⛔️ Cancelling stream for chat:', chatId);
+        fn();
       }
     });
 
-    set(state => ({
-      streams: {
-        ...state.streams,
-        [chatId]: cancel
-      }
-    }));
+    set({ streams: {}, streamStatus: {} });
   },
 
-  // ================================
-  // ОСТАНОВИТЬ ВСЕ СТРИМЫ
-  // ================================
-  stopAllStreams: () => {
-    const { streams } = get();
-    Object.values(streams).forEach(cancel => cancel && cancel());
-    set({ streams: {}, activeChat: null });
+  // ===== ПОЛУЧИТЬ СТАТУС СТРИМА =====
+  getStreamStatus: chatId => {
+    const { streamStatus } = get();
+    return streamStatus[String(chatId)] || 'disconnected';
   }
 }));

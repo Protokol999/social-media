@@ -10,7 +10,7 @@ export const useNotificationStore = create((set, get) => ({
   isStreaming: false,
 
   // =========================
-  // Загрузка истории
+  // 📌 Загрузка истории
   // =========================
   loadNotifications: async () => {
     try {
@@ -36,7 +36,7 @@ export const useNotificationStore = create((set, get) => ({
   },
 
   // =========================
-  // Запуск real-time stream
+  // 🔔 Запуск gRPC стрима
   // =========================
   startStream: () => {
     if (get().isStreaming) return;
@@ -44,15 +44,24 @@ export const useNotificationStore = create((set, get) => ({
     console.log('🔔 Starting notification stream...');
 
     const stopFn = createNotificationStream({
-      onMessage: async notif => {
-        console.log('🔔 Stream received:', notif);
+      onMessage: notif => {
+        console.log('🔔 STREAM MESSAGE:', notif);
 
-        // Только обновляем серверные данные
-        await get().loadNotifications();
+        set(state => {
+          // избегаем дубликатов
+          if (state.notifications.some(n => n.id === notif.id)) {
+            return state;
+          }
+
+          return {
+            notifications: [notif, ...state.notifications],
+            unreadCount: state.unreadCount + (notif.read ? 0 : 1)
+          };
+        });
       },
 
       onError: () => {
-        console.warn('Stream error → reconnecting in 3s...');
+        console.warn('❌ Stream error → reconnecting...');
         set({ isStreaming: false, stopFn: null });
         setTimeout(() => get().startStream(), 3000);
       }
@@ -62,16 +71,17 @@ export const useNotificationStore = create((set, get) => ({
   },
 
   // =========================
-  // Остановка стрима
+  // ⛔ Остановка стрима
   // =========================
   stopStream: () => {
     const stop = get().stopFn;
-    if (stop) stop(); // вызывает stream.cancel()
+    if (stop) stop();
+
     set({ stopFn: null, isStreaming: false });
   },
 
   // =========================
-  // Mark as read
+  // ☑️ Отметить как прочитанное
   // =========================
   markAsRead: async id => {
     try {
@@ -81,6 +91,7 @@ export const useNotificationStore = create((set, get) => ({
         const updated = state.notifications.map(n =>
           n.id === id ? { ...n, read: true } : n
         );
+
         return {
           notifications: updated,
           unreadCount: updated.filter(n => !n.read).length
@@ -92,7 +103,7 @@ export const useNotificationStore = create((set, get) => ({
   },
 
   // =========================
-  // Delete single
+  // 🗑 Удалить уведомление
   // =========================
   deleteNotification: async id => {
     try {
@@ -100,6 +111,7 @@ export const useNotificationStore = create((set, get) => ({
 
       set(state => {
         const updated = state.notifications.filter(n => n.id !== id);
+
         return {
           notifications: updated,
           unreadCount: updated.filter(n => !n.read).length
@@ -111,7 +123,7 @@ export const useNotificationStore = create((set, get) => ({
   },
 
   // =========================
-  // Clear all
+  // 🧹 Очистить все
   // =========================
   clearAll: async () => {
     try {
@@ -122,6 +134,8 @@ export const useNotificationStore = create((set, get) => ({
     }
   }
 }));
+
+// Для дебага через DevTools
 if (typeof window !== 'undefined') {
   window.useNotificationStore = useNotificationStore;
 }

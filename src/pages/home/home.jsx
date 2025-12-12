@@ -9,10 +9,21 @@ export const Home = () => {
   return (
     <section className='home'>
       <Sidebar />
+
       <div className='home__content'>
         <h1 className='home__title'>Лента постов</h1>
-        <PostList currentUser={currentUser} />
-        <FriendList onlyFollowing={true} />
+
+        <div className='home__layout'>
+          {/* Левая колонка – посты */}
+          <div className='home__posts'>
+            <PostList currentUser={currentUser} />
+          </div>
+
+          {/* Правая колонка – друзья */}
+          <aside className='home__friends'>
+            <FriendList onlyFollowing={true} />
+          </aside>
+        </div>
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/api';
 import './friendList.scss';
 
 export const FriendList = ({ onlyFollowing = false }) => {
@@ -15,10 +16,26 @@ export const FriendList = ({ onlyFollowing = false }) => {
     setLoading(true);
     try {
       const response = await api.get('/users');
-      let list = response.data;
-      if (onlyFollowing == true) {
+
+      console.log('USERS RESPONSE:', response.data);
+
+      let list = [];
+
+      // --- универсальная обработка ---
+      if (Array.isArray(response.data)) {
+        list = response.data;
+      } else if (Array.isArray(response.data.users)) {
+        list = response.data.users;
+      } else if (Array.isArray(response.data.items)) {
+        list = response.data.items;
+      } else {
+        console.warn('❗ API returned unexpected format');
+      }
+
+      if (onlyFollowing) {
         list = list.filter(user => user.isFollowing === true);
       }
+
       setFriends(list);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -26,12 +43,15 @@ export const FriendList = ({ onlyFollowing = false }) => {
       setLoading(false);
     }
   };
+
   if (loading) return <div>Загрузка...</div>;
+
   return (
     <div className='friend-list'>
       <h2 className='friend-list__title'>
         {onlyFollowing ? 'Мои подписки' : 'Все пользователи'}
       </h2>
+
       <ul className='friend-list__items'>
         {friends.map(friend => (
           <li key={friend.id} className='friend-list__item'>
@@ -43,12 +63,12 @@ export const FriendList = ({ onlyFollowing = false }) => {
 
             <div className='users-list__info'>
               <p className='users-list__name'>
-                {user.firstName} {user.lastName}
+                {friend.firstName} {friend.lastName}
               </p>
 
               <button
                 className='users-list__profile-btn'
-                onClick={() => navigate(`/profile/${user.id}`)}
+                onClick={() => navigate(`/profile/${friend.id}`)}
               >
                 Перейти
               </button>
